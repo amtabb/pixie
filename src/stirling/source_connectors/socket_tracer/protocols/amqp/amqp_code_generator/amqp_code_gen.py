@@ -15,7 +15,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import List
@@ -23,6 +22,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 import subprocess
 from rules_python.python.runfiles import runfiles
+import defusedxml.ElementTree
 
 
 def to_camel_case(text):
@@ -438,7 +438,7 @@ class CodeGenerator:
             r = runfiles.Create()
             xml_file = r.Rlocation(bzl_base_path + "amqp0-9-1.stripped.xml")
         with open(xml_file, "r") as f:
-            amqp_xml = ET.fromstring(f.read())
+            amqp_xml = defusedxml.ElementTree.fromstring(f.read())
 
         self.constants = self.parse_constants(amqp_xml)
         self.domains = self.parse_domains(amqp_xml)
