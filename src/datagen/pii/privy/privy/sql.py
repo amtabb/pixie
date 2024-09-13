@@ -14,10 +14,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import random
 
 from pypika import Case, Criterion, Table, functions
 from pypika.dialects import MySQLQuery, PostgreSQLQuery
+import secrets
 
 
 class SQLQueryBuilder:
@@ -34,10 +34,10 @@ class SQLQueryBuilder:
 
     def get_random_sample(self, min, source):
         """return random sample from input list. Min number of samples is 1"""
-        return random.sample(list(source), random.randint(min, len(source)))
+        return secrets.SystemRandom().sample(list(source), secrets.SystemRandom().randint(min, len(source)))
 
     def get_random_val(self, source):
-        return random.choice(list(source))
+        return secrets.choice(list(source))
 
     def _where(self, pii_labels, query):
         """Add where clause to query"""
@@ -53,10 +53,10 @@ class SQLQueryBuilder:
             # todo: remove useful try except? What does the first cast to int do?
             try:
                 int(self.payload[label])
-                options.append(table_col > random.randint(0, 1000))
-                options.append(table_col < random.randint(0, 1000))
-                options.append(table_col <= random.randint(0, 1000))
-                options.append(table_col >= random.randint(0, 1000))
+                options.append(table_col > secrets.SystemRandom().randint(0, 1000))
+                options.append(table_col < secrets.SystemRandom().randint(0, 1000))
+                options.append(table_col <= secrets.SystemRandom().randint(0, 1000))
+                options.append(table_col >= secrets.SystemRandom().randint(0, 1000))
             except Exception:
                 pass
             conditions.append(self.get_random_val(options))
@@ -77,11 +77,11 @@ class SQLQueryBuilder:
             ]
             try:
                 int(self.payload[label])
-                options.append(table_col > random.randint(0, 1000))
-                options.append(table_col < random.randint(0, 1000))
-                options.append(table_col <= random.randint(0, 1000))
-                options.append(table_col >= random.randint(0, 1000))
-                case = case.when(self.get_random_val(options), random.randint(0, 1000))
+                options.append(table_col > secrets.SystemRandom().randint(0, 1000))
+                options.append(table_col < secrets.SystemRandom().randint(0, 1000))
+                options.append(table_col <= secrets.SystemRandom().randint(0, 1000))
+                options.append(table_col >= secrets.SystemRandom().randint(0, 1000))
+                case = case.when(self.get_random_val(options), secrets.SystemRandom().randint(0, 1000))
                 continue
             except Exception:
                 pass
@@ -100,7 +100,7 @@ class SQLQueryBuilder:
             functions.StdDev,
         ]
         fun = self.get_random_val(funs)
-        condition = random.randint(0, 10000)
+        condition = secrets.SystemRandom().randint(0, 10000)
         options = [
             fun(pii_label) >= condition,
             fun(pii_label) <= condition,
@@ -127,7 +127,7 @@ class SQLQueryBuilder:
             elif subtype == "where":
                 query = self._where(pii_labels, query_method)
             elif subtype == "limit":
-                query = query_method(random.randint(0, 100))
+                query = query_method(secrets.SystemRandom().randint(0, 100))
             elif subtype == "groupby":
                 query = query_method(self.get_random_val(pii_labels))
                 query = self._having(self.get_random_val(pii_labels), query)
@@ -170,7 +170,7 @@ class SQLQueryBuilder:
             MySQLQuery.from_(table),
             PostgreSQLQuery.from_(table),
         ]
-        query = random.choice(self.dialects)
+        query = secrets.choice(self.dialects)
         # choose a query type e.g. select
         query_type = self.get_random_val(self.query_types.keys())
         # choose selection of json keys (pii types), e.g. "name, address"
