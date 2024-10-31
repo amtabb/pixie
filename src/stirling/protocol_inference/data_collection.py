@@ -17,6 +17,7 @@
 import os
 import subprocess
 import argparse
+from security import safe_command
 
 
 def create_pod2pid(node, runtime_cli):
@@ -49,7 +50,7 @@ def create_pod2pid(node, runtime_cli):
     )
 
     pod2pid = {}
-    ps_out = subprocess.run(cmd, shell=True, capture_output=True)
+    ps_out = safe_command.run(subprocess.run, cmd, shell=True, capture_output=True)
 
     rows = ps_out.stdout.decode('utf-8').splitlines()
     for row in rows:
@@ -71,7 +72,7 @@ def trace_pods(pod2pid, node, pods, duration):
     specified in the input file for duration seconds.
     """
     # Create folder for collecting pcap files.
-    subprocess.run(f"kubectl node-shell {node} -- mkdir -p /captures", shell=True,
+    safe_command.run(subprocess.run, f"kubectl node-shell {node} -- mkdir -p /captures", shell=True,
                    capture_output=False)
 
     tracing_ps = []
@@ -83,7 +84,7 @@ def trace_pods(pod2pid, node, pods, duration):
         cmd = f"kubectl node-shell {node} -- sh -c 'mkdir -p /captures/{pod}; nsenter -t {pid} -n tshark -i any \
         -a duration:{duration} -w /captures/{pod}/{pid}.pcapng'"
         print(cmd)
-        p = subprocess.Popen(cmd, shell=True)
+        p = safe_command.run(subprocess.Popen, cmd, shell=True)
         tracing_ps.append(p)
         print(f"Capturing pid {pid}.")
 
