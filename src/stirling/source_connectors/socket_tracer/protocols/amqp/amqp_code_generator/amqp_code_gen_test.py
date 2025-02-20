@@ -15,7 +15,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from unittest import TestCase, main
-import xml.etree.ElementTree as ET
 from px.src.stirling.source_connectors.socket_tracer.protocols.amqp.amqp_code_generator.amqp_code_gen import (
     CodeGenerator,
     Field,
@@ -23,6 +22,7 @@ from px.src.stirling.source_connectors.socket_tracer.protocols.amqp.amqp_code_ge
     AMQPClass,
     FieldType,
 )
+import defusedxml.ElementTree
 
 
 def sanitize_code_gen_output(str_input):
@@ -254,7 +254,7 @@ class TestAMQPCodeGeneratorParse(BaseTestCase):
         self.code_generator = CodeGenerator()
 
     def test_parse_constants(self):
-        xml_input = ET.fromstring(
+        xml_input = defusedxml.ElementTree.fromstring(
             """
             <amqp major="0" minor="9" revision="1" port="5672">
                 <constant name="frame-method" value="1"/>
@@ -280,7 +280,7 @@ class TestAMQPCodeGeneratorParse(BaseTestCase):
         )
 
     def test_parse_domains(self):
-        xml_input = ET.fromstring(
+        xml_input = defusedxml.ElementTree.fromstring(
             """
         <amqp major="0" minor="9" revision="1" port="5672">
             <domain name="class-id" type="short"/>
@@ -302,7 +302,7 @@ class TestAMQPCodeGeneratorParse(BaseTestCase):
         )
 
     def test_process_fields(self):
-        xml_input = ET.fromstring(
+        xml_input = defusedxml.ElementTree.fromstring(
             """
             <method name="start" synchronous="1" index="10">
                 <chassis name="client" implement="MUST"/>
@@ -332,7 +332,7 @@ class TestAMQPCodeGeneratorParse(BaseTestCase):
         )
 
     def test_parse_methods_to_structs(self):
-        xml_input = ET.fromstring(
+        xml_input = defusedxml.ElementTree.fromstring(
             """
             <method name="start" synchronous="1" index="10">
                 <chassis name="client" implement="MUST"/>
@@ -357,7 +357,7 @@ class TestAMQPCodeGeneratorParse(BaseTestCase):
         )
 
     def test_parse_amqp_classes(self):
-        xml_input = ET.fromstring(
+        xml_input = defusedxml.ElementTree.fromstring(
             """
             <class name="connection" handler="connection" index="10">
                 <chassis name="server" implement="MUST"/>
