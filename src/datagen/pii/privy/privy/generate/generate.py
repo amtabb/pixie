@@ -22,13 +22,12 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Tuple
 
-import requests
-
 from privy.generate.utils import (PrivyFileType, PrivyWriter, check_percentage,
                                   check_positive)
 from privy.payload import PayloadGenerator
 from privy.providers.english_us import English_US
 from privy.providers.german_de import German_DE
+from security import safe_requests
 
 
 def parse_args():
@@ -222,7 +221,7 @@ def main(args):
         log.info("Not found. Downloading...")
         commit_hash = "ea4a924b870ca4f6d687809fa7891cccc0d19085"
         openapi_directory_link = f"https://github.com/APIs-guru/openapi-directory/archive/{commit_hash}.tar.gz"
-        with requests.get(openapi_directory_link, stream=True) as rx, tarfile.open(fileobj=rx.raw, mode="r:gz") as tar:
+        with safe_requests.get(openapi_directory_link, stream=True) as rx, tarfile.open(fileobj=rx.raw, mode="r:gz") as tar:
             tar.extractall(api_specs_folder.parent)
 
     # ------- Choose Providers --------

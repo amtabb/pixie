@@ -27,7 +27,7 @@ import string
 import hashlib
 
 import pyzstd
-import requests
+from security import safe_requests
 
 MIRROR_LIST = [
     "http://mirrors.kernel.org/ubuntu/pool/",
@@ -101,7 +101,7 @@ def download_deb(ubuntu_deb_path, checksum, tmpdir):
     last_reason = ''
     for mirror_prefix in MIRROR_LIST:
         url = f'{mirror_prefix}{ubuntu_deb_path}'
-        resp = requests.get(url)
+        resp = safe_requests.get(url)
         if not resp.ok:
             last_reason = resp.reason
             print(f'Warning: mirror {url} failed with: {resp.reason}')
