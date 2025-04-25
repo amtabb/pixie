@@ -821,7 +821,7 @@ class CodeGeneratorWriter:
         os.makedirs(self.generation_dir, exist_ok=True)
         #  In order to prevent long strings like licenses, Jinja2 is used to render the files.
         #  Jinja2 is a template rendering engine(https://pypi.org/project/Jinja2/)
-        self.env = Environment(loader=FileSystemLoader(self.template_dir))
+        self.env = Environment(loader=FileSystemLoader(self.template_dir), autoescape=True)
         self.generator = CodeGenerator(xml_file)
         self.types_gen_header_path = Path(self.generation_dir) / Path("types_gen.h")
         self.struct_gen_header_path = Path(self.generation_dir) / Path("decode.h")
