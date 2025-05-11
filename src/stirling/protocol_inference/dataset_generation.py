@@ -19,6 +19,7 @@ import subprocess
 import argparse
 import hashlib
 import pandas as pd
+from security import safe_command
 
 # For extracting fields from Tshark output.
 kTCPPayloadIndex = 0
@@ -99,7 +100,7 @@ def gen_tshark_cmd():
 def run_tshark(pcap_path, cmd):
     output_file = pcap_path[:-6] + "txt"
     tshark_cmd = cmd.format(pcap_file=pcap_path, output_file=output_file)
-    subprocess.run(tshark_cmd, shell=True, capture_output=False)
+    safe_command.run(subprocess.run, tshark_cmd, shell=True, capture_output=False)
     return output_file
 
 
