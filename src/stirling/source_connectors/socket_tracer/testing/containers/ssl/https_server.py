@@ -33,9 +33,8 @@ if major < 3 or minor < 10:
 
 pid = os.getpid()
 logging.info(f"pid={pid}")
-
-file = open("/usr/share/nginx/html/index.html", "r")
-PAYLOAD = file.read()
+with open("/usr/share/nginx/html/index.html", "r") as file:
+    PAYLOAD = file.read()
 
 
 class MyRequestHandler(BaseHTTPRequestHandler):
