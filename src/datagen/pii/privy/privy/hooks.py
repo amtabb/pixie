@@ -16,7 +16,6 @@
 
 import ast
 import logging
-import random
 from copy import deepcopy
 from enum import Enum
 from typing import Optional, Tuple, Union
@@ -24,6 +23,7 @@ from typing import Optional, Tuple, Union
 import schemathesis
 from hypothesis import given
 from hypothesis import strategies as st
+import secrets
 
 
 class ParamType(Enum):
@@ -172,7 +172,7 @@ class SchemaHooks:
                     ):
                         return True
                 if isinstance(type_, bool):
-                    case_attr[name] = random.choice(["True", "False"])
+                    case_attr[name] = secrets.choice(["True", "False"])
                     return True
 
         def check_for_nonpii_keywords(self, name: str, schema: Optional[dict],
@@ -199,7 +199,7 @@ class SchemaHooks:
                     ):
                         return True
                 if isinstance(type_, bool):
-                    case_attr[name] = random.choice(["True", "False"])
+                    case_attr[name] = secrets.choice(["True", "False"])
                     return True
 
         def lookup_pii_provider(self, keyword: str, parameter_name: str, case_attr: dict,
@@ -270,7 +270,7 @@ class SchemaHooks:
             if isinstance(enum, str):
                 enum = ast.literal_eval(enum)
             if isinstance(enum, list):
-                enum_value = random.choice(enum)
+                enum_value = secrets.choice(enum)
                 self.log.debug(
                     f"{parameter_name} |matched enum| {enum} |generated| {enum_value}"
                 )

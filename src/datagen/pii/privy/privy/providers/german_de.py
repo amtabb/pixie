@@ -20,6 +20,7 @@ import string
 from faker.providers import BaseProvider
 
 from privy.providers.english_us import English_US
+import secrets
 
 
 # override gender provider from English_US
@@ -34,15 +35,15 @@ class Passport(BaseProvider):
         # German Passports consist of 27 characters and digits
         # (excluding a, e, i, o, u, ae, oe, ue, b, s, q, d)
         allowed_chars = [c for c in string.ascii_uppercase + string.digits if c not in "aeioubsqd"]
-        return "".join(random.sample(allowed_chars, 27))
+        return "".join(secrets.SystemRandom().sample(allowed_chars, 27))
 
 
 class DriversLicense(BaseProvider):
     # override us_drivers_license from English_US
     def drivers_license(self):
         # German driver's licenses consist of 4 digits followed by 7 alphanumeric chars
-        lic = "".join(random.sample(string.digits, 4))
-        return lic.join(random.sample(string.ascii_uppercase + string.digits, 7))
+        lic = "".join(secrets.SystemRandom().sample(string.digits, 4))
+        return lic.join(secrets.SystemRandom().sample(string.ascii_uppercase + string.digits, 7))
 
 
 # German Germany - inherits methods from English_US

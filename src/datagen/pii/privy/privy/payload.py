@@ -16,7 +16,6 @@
 
 import logging
 import os
-import random
 import time
 import traceback
 import warnings
@@ -39,6 +38,7 @@ from privy.generate.utils import PrivyWriter
 from privy.hooks import ParamType, SchemaHooks
 from privy.providers.generic import Provider
 from privy.route import PayloadRoute
+import secrets
 
 
 # todo @benkilimnik add fine grained warning filter for schemathesis
@@ -115,7 +115,7 @@ class PayloadGenerator:
         """Assign a pii value to a parameter for the input case attribute (e.g. case.path_parameters)."""
         self.log.debug(f"|Inserting additional pii type| {pii.template_name}")
         if pii.aliases:
-            alias = random.choice(list(pii.aliases))
+            alias = secrets.choice(list(pii.aliases))
         else:
             alias = pii.template_name
         case_attr[alias] = f"{{{{{pii.template_name}}}}}"
@@ -126,7 +126,7 @@ class PayloadGenerator:
         if self.args.equalize_pii_distribution_to_percentage:
             self.log.debug(
                 "Inserting additional random PII to equalize distribution of PII types")
-            if random.randint(0, 1):
+            if secrets.SystemRandom().randint(0, 1):
                 # sample just one pii label (with the lowest count) 50% of the time
                 min_pii_type, count = self.analyzer.get_lowest_count_pii_type()
                 self.log.debug(
@@ -135,8 +135,7 @@ class PayloadGenerator:
                 self.insert_pii(pii, case_attr, parameter_type)
             else:
                 # choose between 1-{num_additional_pii_types} pii types with the lowest count
-                num_pii_types = random.randint(
-                    1, self.args.num_additional_pii_types)
+                num_pii_types = secrets.SystemRandom().randint(1, self.args.num_additional_pii_types)
                 for pii_type, count in self.analyzer.k_lowest_pii_types(num_pii_types):
                     self.log.debug(
                         f"Inserting PII type: |{pii_type}| with count |{count}|")
@@ -144,7 +143,7 @@ class PayloadGenerator:
                     self.insert_pii(pii, case_attr, parameter_type)
         # randomize order of parameters
         case_attr = list(case_attr.items())
-        random.shuffle(case_attr)
+        secrets.SystemRandom().shuffle(case_attr)
         case_attr = dict(case_attr)
         return case_attr
 

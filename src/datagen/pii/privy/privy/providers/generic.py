@@ -15,7 +15,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import dataclasses
-import random
 import string
 from abc import ABC
 from decimal import Decimal
@@ -26,6 +25,7 @@ from faker.providers import BaseProvider
 from faker.providers.lorem.en_US import Provider as LoremProvider
 from presidio_evaluator.data_generator.faker_extensions.data_objects import \
     FakerSpansResult
+import secrets
 
 
 @dataclasses.dataclass()
@@ -91,11 +91,11 @@ class GenericProvider(ABC):
 
     def get_random_pii_provider(self) -> Provider:
         """choose random PII provider and generate a value"""
-        return random.choice(list(self.pii_providers))
+        return secrets.choice(list(self.pii_providers))
 
     def sample_pii_providers(self, percent: float) -> list[Provider]:
         """Sample a random percentage of PII providers and associated values"""
-        return random.sample(list(self.pii_providers), round(len(self.pii_providers) * percent))
+        return secrets.SystemRandom().sample(list(self.pii_providers), round(len(self.pii_providers) * percent))
 
     def filter_providers(self, pii_types: list[str]) -> None:
         """Filter out PII types not in the given list, marking them as non-PII"""
@@ -113,8 +113,7 @@ class GenericProvider(ABC):
 
 class MacAddressProvider(BaseProvider):
     def mac_address(self) -> str:
-        pattern = random.choice(
-            [
+        pattern = secrets.choice([
                 "^^:^^:^^:^^:^^:^^",
                 "^^-^^-^^-^^-^^-^^",
                 "^^ ^^ ^^ ^^ ^^ ^^",
@@ -133,20 +132,20 @@ class IMEIProvider(BaseProvider):
 
 class GenderProvider(BaseProvider):
     def gender(self) -> str:
-        return random.choice(["Male", "Female", "Other"])
+        return secrets.choice(["Male", "Female", "Other"])
 
 
 class PassportProvider(BaseProvider):
     def passport(self) -> str:
         # US Passports consist of 1 letter or digit followed by 8-digits
-        return self.bothify(text=random.choice(["?", "#"]) + "########")
+        return self.bothify(text=secrets.choice(["?", "#"]) + "########")
 
 
 class AlphanumProvider(BaseProvider):
     def alphanum(self) -> str:
         alphanumeric_string = "".join(
-            [random.choice(["?", "#"])
-                for _ in range(random.randint(1, 15))]
+            [secrets.choice(["?", "#"])
+                for _ in range(secrets.SystemRandom().randint(1, 15))]
         )
         return self.bothify(text=alphanumeric_string)
 
@@ -155,7 +154,7 @@ class ITINProvider(BaseProvider):
     def itin(self) -> str:
         # US Individual Taxpayer Identification Number (ITIN).
         # Nine digits that start with a "9" and contain a "7" or "8" as the 4 digit.
-        return f"9{self.numerify(text='##')}{random.choice(['7', '8'])}{self.numerify(text='#####')}"
+        return f"9{self.numerify(text='##')}{secrets.choice(['7', '8'])}{self.numerify(text='#####')}"
 
 
 class StringProvider(LoremProvider):
@@ -164,7 +163,7 @@ class StringProvider(LoremProvider):
         def sample(text, low, high, space=False):
             """sample randomly from input text with a minimum length of low and maximum length of high"""
             space = " " if space else ""
-            return space.join(random.sample(text, random.randint(low, high)))
+            return space.join(secrets.SystemRandom().sample(text, secrets.SystemRandom().randint(low, high)))
 
         characters = sample(string.ascii_letters, 1, 10)
         characters_and_numbers = sample(
